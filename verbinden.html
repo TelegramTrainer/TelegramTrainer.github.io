@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Zurück zu Telegram</title>
+<style>
+  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --btn: #2aabee; --btn-fg: #fff; --box: #f2f2f7; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #111; --fg: #f5f5f7; --muted: #a1a1a6; --box: #222; }
+  }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 2.5rem 1rem;
+         background: var(--bg); color: var(--fg); line-height: 1.5; text-align: center; }
+  main { max-width: 26rem; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 .5rem; }
+  p { margin: .5rem 0 1.5rem; color: var(--muted); }
+  .btn { display: block; width: 100%; padding: 1rem; border: 0; border-radius: 14px;
+         background: var(--btn); color: var(--btn-fg); font-size: 1.15rem; font-weight: 600;
+         text-decoration: none; cursor: pointer; }
+  .small { font-size: .9rem; margin-top: 2rem; }
+  textarea { width: 100%; height: 5.5rem; margin-top: .5rem; padding: .5rem; border: 0;
+             border-radius: 10px; background: var(--box); color: var(--fg); font-size: .8rem;
+             word-break: break-all; resize: none; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <div id="ok" class="hidden">
+    <h1>✅ Fast geschafft</h1>
+    <p>Tippe auf den Knopf. Telegram öffnet sich mit einer fertigen Nachricht –
+       du musst sie nur noch <b>senden</b>.</p>
+    <a id="go" class="btn" href="#">Zurück zu Telegram</a>
+    <div class="small">
+      Klappt das nicht? Den Code kopieren und dem Bot schicken:
+      <textarea id="code" readonly></textarea>
+      <button id="copy" class="btn" type="button" style="margin-top:.5rem;font-size:1rem;padding:.7rem">Code kopieren</button>
+    </div>
+  </div>
+  <div id="bad" class="hidden">
+    <h1>Anmeldung abgebrochen</h1>
+    <p>Es wurde nichts verbunden. Öffne den Anmelde-Link im Telegram-Chat einfach noch einmal.</p>
+  </div>
+</main>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var code = q.get("code");
+  if (!code) { document.getElementById("bad").className = ""; return; }
+  // state = "<zufall>.<bot-name>": so weiß die Seite, zu welchem Bot es zurückgeht.
+  var state = q.get("state") || "";
+  var bot = state.slice(state.lastIndexOf(".") + 1);
+  var text = "code=" + code;
+  var box = document.getElementById("code");
+  box.value = text;
+  document.getElementById("ok").className = "";
+  var go = document.getElementById("go");
+  if (/^[A-Za-z][A-Za-z0-9_]{3,31}$/.test(bot)) {
+    go.href = "https://t.me/" + bot + "?text=" + encodeURIComponent(text);
+  } else {
+    go.className = "hidden";
+  }
+  function copy() {
+    box.select();
+    try { navigator.clipboard.writeText(text); } catch (e) {}
+    try { document.execCommand("copy"); } catch (e) {}
+  }
+  // Beim Tippen auf „Zurück“ zusätzlich kopieren - falls das Eingabefeld leer bleibt.
+  go.addEventListener("click", copy);
+  document.getElementById("copy").addEventListener("click", function () {
+    copy();
+    this.textContent = "Kopiert ✓";
+  });
+})();
+</script>
+</body>
+</html>
