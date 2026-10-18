@@ -2,77 +2,334 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
-<meta name="robots" content="noindex">
-<title>Zurück zu Telegram</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<title>Fast geschafft</title>
 <style>
-  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --btn: #2aabee; --btn-fg: #fff; --box: #f2f2f7; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #111; --fg: #f5f5f7; --muted: #a1a1a6; --box: #222; }
+  :root {
+    --bg: #000;
+    --surface: rgba(28, 28, 33, 0.7);
+    --surface-2: rgba(38, 38, 45, 0.75);
+    --line: #2e2e36;
+    --text: #fff;
+    --soft: #aeaeb2;
+    --muted: #7c7c84;
+    --accent: #7cc8ff;
+    --accent-hi: #cbe9ff;
+    --ok: #30d158;
+    --danger: #ff453a;
+    color-scheme: dark;
   }
   * { box-sizing: border-box; }
-  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 2.5rem 1rem;
-         background: var(--bg); color: var(--fg); line-height: 1.5; text-align: center; }
-  main { max-width: 26rem; margin: 0 auto; }
-  h1 { font-size: 1.5rem; margin: 0 0 .5rem; }
-  p { margin: .5rem 0 1.5rem; color: var(--muted); }
-  .btn { display: block; width: 100%; padding: 1rem; border: 0; border-radius: 14px;
-         background: var(--btn); color: var(--btn-fg); font-size: 1.15rem; font-weight: 600;
-         text-decoration: none; cursor: pointer; }
-  .small { font-size: .9rem; margin-top: 2rem; }
-  textarea { width: 100%; height: 5.5rem; margin-top: .5rem; padding: .5rem; border: 0;
-             border-radius: 10px; background: var(--box); color: var(--fg); font-size: .8rem;
-             word-break: break-all; resize: none; }
-  .hidden { display: none; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  #sky {
+    position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0;
+    background:
+      radial-gradient(60% 40% at 72% 22%, rgba(122, 51, 125, 0.32), transparent 70%),
+      radial-gradient(55% 45% at 18% 78%, rgba(66, 77, 217, 0.26), transparent 70%),
+      radial-gradient(40% 30% at 50% 50%, rgba(46, 140, 160, 0.08), transparent 70%),
+      #000;
+  }
+  main {
+    position: relative; z-index: 1;
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: calc(env(safe-area-inset-top, 0px) + 28px) 16px calc(env(safe-area-inset-bottom, 0px) + 28px);
+  }
+  .card {
+    width: 100%; max-width: 420px;
+    padding: 28px 22px 22px;
+    border-radius: 22px;
+    background: var(--surface);
+    border: 1px solid rgba(124, 200, 255, 0.12);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    backdrop-filter: saturate(140%) blur(14px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+    text-align: center;
+    animation: rise .6s ease both;
+  }
+  .label {
+    font-size: 12.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 18px;
+  }
+  .badge {
+    width: 76px; height: 76px; margin: 0 auto 16px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 40%, rgba(124, 200, 255, 0.28), rgba(124, 200, 255, 0.06) 70%);
+    box-shadow: 0 0 0 1px rgba(124, 200, 255, 0.35), 0 0 38px rgba(124, 200, 255, 0.35);
+    animation: glow 3.2s ease-in-out infinite;
+  }
+  .badge svg { width: 38px; height: 38px; }
+  .badge.bad {
+    background: radial-gradient(circle at 50% 40%, rgba(255, 69, 58, 0.28), rgba(255, 69, 58, 0.06) 70%);
+    box-shadow: 0 0 0 1px rgba(255, 69, 58, 0.4), 0 0 38px rgba(255, 69, 58, 0.3);
+    animation: none;
+  }
+  h1 { font-size: 27px; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .lead { color: var(--soft); margin: 0 0 22px; font-size: 16px; }
+  ol.steps { list-style: none; padding: 0; margin: 0 0 22px; text-align: left; }
+  .steps li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 14px; margin-bottom: 8px; border-radius: 16px;
+    background: var(--surface-2); border: 1px solid var(--line);
+    color: var(--soft); font-size: 15px;
+  }
+  .steps li b { color: var(--text); font-weight: 600; }
+  .num {
+    flex: none; width: 26px; height: 26px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+    background: rgba(255, 255, 255, 0.08); color: var(--soft);
+  }
+  .steps li.done .num { background: var(--ok); color: #00140a; }
+  .steps li.now { border-color: rgba(124, 200, 255, 0.55); box-shadow: 0 0 22px rgba(124, 200, 255, 0.12); }
+  .steps li.now .num { background: var(--accent); color: #001424; }
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; min-height: 56px; padding: 0 22px;
+    border: 0; border-radius: 40px;
+    background: #fff; color: #000;
+    font: inherit; font-size: 17px; font-weight: 700;
+    text-decoration: none; cursor: pointer;
+    transition: transform .12s ease, box-shadow .2s ease;
+    box-shadow: 0 0 0 0 rgba(124, 200, 255, 0.5);
+    animation: pulse 2.6s ease-out infinite;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn svg { width: 22px; height: 22px; }
+  .btn.ghost {
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--line); min-height: 48px; font-size: 15px; font-weight: 600;
+    animation: none;
+  }
+  .hint { color: var(--muted); font-size: 13.5px; margin: 12px 4px 0; }
+  .hint b { color: var(--soft); }
+  details { margin-top: 20px; text-align: left; }
+  summary {
+    cursor: pointer; color: var(--accent); font-size: 14.5px; font-weight: 600;
+    list-style: none; text-align: center; padding: 6px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  .fallback { padding-top: 10px; }
+  .fallback p { color: var(--soft); font-size: 14px; margin: 0 0 10px; }
+  textarea {
+    width: 100%; height: 78px; margin: 0 0 10px; padding: 10px 12px;
+    border-radius: 14px; border: 1px solid var(--line);
+    background: rgba(0, 0, 0, 0.35); color: var(--soft);
+    font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; resize: none;
+  }
+  .safe {
+    display: flex; gap: 8px; align-items: center; justify-content: center;
+    margin-top: 18px; color: var(--muted); font-size: 12.5px;
+  }
+  .safe svg { width: 14px; height: 14px; flex: none; }
+  .hidden { display: none !important; }
+  .toast {
+    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); z-index: 2;
+    transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+    padding: 10px 16px; border-radius: 40px; font-size: 14px; font-weight: 600;
+    background: rgba(28, 28, 33, 0.92); border: 1px solid var(--line);
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @keyframes rise { from { transform: translateY(14px); } to { transform: none; } }
+  @keyframes glow { 50% { box-shadow: 0 0 0 1px rgba(124, 200, 255, 0.5), 0 0 54px rgba(124, 200, 255, 0.5); } }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(124, 200, 255, 0.45); }
+    70% { box-shadow: 0 0 0 14px rgba(124, 200, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(124, 200, 255, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .badge, .btn { animation: none; }
+  }
 </style>
 </head>
 <body>
+<canvas id="sky" aria-hidden="true"></canvas>
 <main>
-  <div id="ok" class="hidden">
-    <h1>✅ Fast geschafft</h1>
-    <p>Tippe auf den Knopf. Telegram öffnet sich mit einer fertigen Nachricht –
-       du musst sie nur noch <b>senden</b>.</p>
-    <a id="go" class="btn" href="#">Zurück zu Telegram</a>
-    <div class="small">
-      Klappt das nicht? Den Code kopieren und dem Bot schicken:
-      <textarea id="code" readonly></textarea>
-      <button id="copy" class="btn" type="button" style="margin-top:.5rem;font-size:1rem;padding:.7rem">Code kopieren</button>
+  <section id="ok" class="card hidden">
+    <p class="label">Musik verbinden</p>
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#cbe9ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
     </div>
-  </div>
-  <div id="bad" class="hidden">
-    <h1>Anmeldung abgebrochen</h1>
-    <p>Es wurde nichts verbunden. Öffne den Anmelde-Link im Telegram-Chat einfach noch einmal.</p>
-  </div>
+    <h1>Fast geschafft!</h1>
+    <p class="lead">Spotify hat zugestimmt. Jetzt nur noch zurück zu Telegram.</p>
+    <ol class="steps">
+      <li class="done"><span class="num">✓</span><span><b>Bei Spotify angemeldet</b></span></li>
+      <li class="now"><span class="num">2</span><span><b>Unten auf „Zurück zu Telegram“ tippen</b><br>Der Chat mit dem Bot öffnet sich, die Nachricht ist schon eingetragen.</span></li>
+      <li><span class="num">3</span><span><b>Nachricht senden</b> – fertig. Deine Musik erscheint dann von selbst im Dashboard.</span></li>
+    </ol>
+    <a id="go" class="btn" href="#">
+      <svg viewBox="0 0 24 24" fill="#000" aria-hidden="true"><path d="M21.9 3.6 18.7 19c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.2-8.3c.4-.4-.1-.6-.6-.2L6.1 12.6l-4.9-1.5c-1-.3-1.1-1 .2-1.5L20.5 2.3c.9-.3 1.7.2 1.4 1.3z"/></svg>
+      Zurück zu Telegram
+    </a>
+    <p class="hint" id="hint">Steht unten im Chat <b>„Starten“</b>? Erst darauf tippen, dann die Nachricht senden.</p>
+    <details>
+      <summary>Klappt nicht?</summary>
+      <div class="fallback">
+        <p>Code kopieren, in Telegram den Chat mit dem Bot öffnen, einfügen und senden.</p>
+        <textarea id="code" readonly></textarea>
+        <button id="copy" class="btn ghost" type="button">Code kopieren</button>
+      </div>
+    </details>
+    <p class="safe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      Der Code gilt nur einmal und nur für kurze Zeit.
+    </p>
+  </section>
+
+  <section id="bad" class="card hidden">
+    <p class="label">Musik verbinden</p>
+    <div class="badge bad" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffd0cc" stroke-width="2.6" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>
+    </div>
+    <h1>Nicht verbunden</h1>
+    <p class="lead">Die Anmeldung wurde abgebrochen – es wurde nichts gespeichert.</p>
+    <ol class="steps">
+      <li class="now"><span class="num">1</span><span><b>Diese Seite schließen</b></span></li>
+      <li><span class="num">2</span><span><b>Den Anmelde-Link in Telegram noch einmal öffnen</b> und bei Spotify auf „Zustimmen“ tippen.</span></li>
+    </ol>
+  </section>
 </main>
+<div id="toast" class="toast" role="status"></div>
 <script>
 (function () {
   var q = new URLSearchParams(location.search);
   var code = q.get("code");
-  if (!code) { document.getElementById("bad").className = ""; return; }
-  // state = "<zufall>.<bot-name>": so weiß die Seite, zu welchem Bot es zurückgeht.
   var state = q.get("state") || "";
   var bot = state.slice(state.lastIndexOf(".") + 1);
-  var text = "code=" + code;
-  var box = document.getElementById("code");
-  box.value = text;
-  document.getElementById("ok").className = "";
-  var go = document.getElementById("go");
-  if (/^[A-Za-z][A-Za-z0-9_]{3,31}$/.test(bot)) {
-    go.href = "https://t.me/" + bot + "?text=" + encodeURIComponent(text);
+  var $ = function (id) { return document.getElementById(id); };
+
+  function toast(text) {
+    var t = $("toast");
+    t.textContent = text;
+    t.classList.add("show");
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  if (!code) {
+    $("bad").classList.remove("hidden");
   } else {
-    go.className = "hidden";
+    var text = "code=" + code;
+    $("code").value = text;
+    $("ok").classList.remove("hidden");
+    var go = $("go");
+    var copy = function () {
+      $("code").select();
+      try { navigator.clipboard.writeText(text); } catch (e) {}
+      try { document.execCommand("copy"); } catch (e) {}
+    };
+    if (/^[A-Za-z][A-Za-z0-9_]{3,31}$/.test(bot)) {
+      go.href = "https://t.me/" + bot + "?text=" + encodeURIComponent(text);
+      go.addEventListener("click", function () {
+        copy();
+        toast("Telegram wird geöffnet …");
+      });
+    } else {
+      go.classList.add("hidden");
+      $("hint").classList.add("hidden");
+      document.querySelector("details").open = true;
+    }
+    $("copy").addEventListener("click", function () {
+      copy();
+      this.textContent = "Kopiert ✓";
+      toast("Code kopiert");
+    });
   }
-  function copy() {
-    box.select();
-    try { navigator.clipboard.writeText(text); } catch (e) {}
-    try { document.execCommand("copy"); } catch (e) {}
+
+  var canvas = $("sky");
+  var ctx = canvas.getContext && canvas.getContext("2d");
+  if (!ctx) return;
+  var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var tints = ["#ffffff", "#ffffff", "#cfe3ff", "#d8ccff", "#ffd9ef", "#ffe9c4"];
+  var stars = [], w = 0, h = 0, dpr = 1;
+
+  function nebula() {
+    var g = [
+      [0.72, 0.22, 0.6, "rgba(122,51,125,0.30)"],
+      [0.18, 0.78, 0.55, "rgba(66,77,217,0.24)"],
+      [0.5, 0.5, 0.4, "rgba(46,140,160,0.07)"]
+    ];
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, w, h);
+    for (var i = 0; i < g.length; i++) {
+      var r = Math.max(w, h) * g[i][2];
+      var grd = ctx.createRadialGradient(w * g[i][0], h * g[i][1], 0, w * g[i][0], h * g[i][1], r);
+      grd.addColorStop(0, g[i][3]);
+      grd.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, w, h);
+    }
   }
-  // Beim Tippen auf „Zurück“ zusätzlich kopieren - falls das Eingabefeld leer bleibt.
-  go.addEventListener("click", copy);
-  document.getElementById("copy").addEventListener("click", function () {
-    copy();
-    this.textContent = "Kopiert ✓";
+
+  function setup() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.round(w * h / 2600);
+    stars = [];
+    for (var i = 0; i < n; i++) {
+      var big = Math.random() < 0.06;
+      stars.push({
+        x: Math.random() * w, y: Math.random() * h,
+        r: big ? 0.9 + Math.random() * 0.9 : 0.25 + Math.random() * 0.6,
+        a: 0.35 + Math.random() * 0.65,
+        s: 0.4 + Math.random() * 1.4,
+        p: Math.random() * Math.PI * 2,
+        d: 0.02 + Math.random() * 0.06 * (big ? 1.6 : 1),
+        c: tints[Math.floor(Math.random() * tints.length)],
+        big: big
+      });
+    }
+  }
+
+  function draw(t) {
+    nebula();
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var x = still ? s.x : (s.x + t * s.d) % w;
+      var tw = still ? 1 : 0.65 + 0.35 * Math.sin(t * s.s + s.p);
+      ctx.globalAlpha = s.a * tw;
+      ctx.fillStyle = s.c;
+      ctx.beginPath();
+      ctx.arc(x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      if (s.big) {
+        ctx.globalAlpha = s.a * tw * 0.18;
+        ctx.beginPath();
+        ctx.arc(x, s.y, s.r * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  var last = 0, running = false;
+  function loop(ms) {
+    if (document.hidden) { running = false; return; }
+    if (ms - last > 33) { draw(ms / 1000); last = ms; }
+    requestAnimationFrame(loop);
+  }
+  function start() {
+    if (running || still) return;
+    running = true;
+    requestAnimationFrame(loop);
+  }
+
+  setup();
+  if (still) { draw(0); } else { start(); }
+  window.addEventListener("resize", function () { setup(); if (still) draw(0); });
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) start();
   });
 })();
 </script>
